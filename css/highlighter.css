@@ -29,13 +29,13 @@ pre .support.attribute {
   color: #67e0ae; }
 
 pre .keyword, pre .selector {
-  color: Turquoise; }
+  color: #504aff; }
 
 pre .inherited-class {
   font-style: italic; }
 
 pre .entity {
-  color: #67e0ae; }
+  color: #e4a305; }
 
 pre .support {
   color: #8192b9; }

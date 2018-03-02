@@ -95,6 +95,14 @@ const types = {
       return `<pre class="var-pre code"><span class="var-name">${content[0]}</span>:<span class="var-val">${val}</span></pre>`;
     }
   },
+  idea: {
+    match: (content) =>
+      content.substr(0, 2) === '? ',
+    format: content => {
+      content = content.slice(2);
+      return `<div class="idea">${content}</div>`;
+    }
+  },
   checkbox: {
     match: (content) =>
       content.substr(0, 3) === '[ ]' || content.substr(0, 3) === '[x]',
@@ -112,6 +120,13 @@ const types = {
       /^[^a-z]*$/i.test(content) && !types.sparkline.match(content),
     format: (content) => {
       return `<pre class='code'><span class="comment">${content}</span> <br>${eval(content)}</pre>`;
+    }
+  },
+  hexcode: {
+    match: (content) =>
+      /^#[0-9A-F]{6}$/i.test(content),
+    format: (content) => {
+      return content;
     }
   },
   sparkline: {
@@ -325,6 +340,7 @@ const enterMessage = async () => {
   const result = await message(content);
   recordEntry(content, type, id);
   renderMessage(result, type, id);
+  scrollToBottom();
 };
 
 const recordEntry = (content, type, id) => {
