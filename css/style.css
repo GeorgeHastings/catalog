@@ -625,8 +625,8 @@ body {
   .message.checkbox {
     margin-top: 1rem; }
   .message.idea {
-    margin: 2rem 0 2rem 0rem;
-    color: #F8D31C; }
+    margin: 1rem 0 1rem 0rem;
+    color: #f9ac00; }
     .message.idea .m-c {
       padding: 1rem;
       max-width: calc(100% - 2rem);
