@@ -628,7 +628,7 @@ body {
     margin: 1rem 0 1rem 0rem;
     color: #f9ac00; }
     .message.idea .m-c {
-      padding: 1rem;
+      padding: 0.5rem 1rem;
       max-width: calc(100% - 2rem);
       border-left: 3px solid #F8D31C;
       background-color: var(--hover-color); }
