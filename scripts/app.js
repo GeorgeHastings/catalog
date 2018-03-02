@@ -100,7 +100,7 @@ const types = {
       content.substr(0, 2) === '? ',
     format: content => {
       content = content.slice(2);
-      return `<div class="idea">${content}</div>`;
+      return `<div class="idea">✦ ${content}</div>`;
     }
   },
   checkbox: {
