@@ -628,10 +628,10 @@ body {
     margin: 2rem 0 2rem 0rem;
     color: #F8D31C; }
     .message.idea .m-c {
-      padding-left: 2rem;
+      padding: 1rem;
       max-width: calc(100% - 2rem);
       border-left: 3px solid #F8D31C;
-      background-color: var(--backdrop-color); }
+      background-color: var(--hover-color); }
   .message.quote {
     color: var(--subtle-text-color);
     margin: 2rem 0 2rem 0rem; }
