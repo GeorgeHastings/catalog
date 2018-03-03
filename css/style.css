@@ -640,13 +640,17 @@ body {
       border-left: 3px solid var(--border-color); }
     .message.quote + .message.quote {
       margin-top: 0; }
-  .message.list .m-c:before {
-    content: "*";
-    line-height: 0.75rem;
-    vertical-align: bottom;
-    font-size: 1.5rem;
-    margin-right: 1rem;
-    color: var(--subtle-text-color); }
+  .message.list .m-c {
+    padding-left: 1.5rem; }
+    .message.list .m-c:before {
+      position: absolute;
+      content: "*";
+      line-height: 150%;
+      vertical-align: bottom;
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      margin-left: -1.5rem;
+      color: var(--subtle-text-color); }
   .message.list + .message:not(.list) {
     margin-top: 1rem; }
   .message.url {

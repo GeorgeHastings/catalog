@@ -321,13 +321,20 @@ body {
   }
 
   &.list {
-    .m-c:before {
-      content: "*";
-      line-height: 0.75rem;
-      vertical-align: bottom;
-      font-size: 1.5rem;
-      margin-right: 1rem;
-      color: var(--subtle-text-color);
+    .m-c {
+      padding-left: 1.5rem;
+
+      &:before {
+        position: absolute;
+        content: "*";
+        // top: 0.75rem;
+        line-height: 150%;
+        vertical-align: bottom;
+        font-size: 1.5rem;
+        margin-right: 1rem;
+        margin-left: -1.5rem;
+        color: var(--subtle-text-color);
+      }
     }
 
     & + .message:not(.list)  {

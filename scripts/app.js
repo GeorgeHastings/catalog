@@ -100,7 +100,7 @@ const types = {
       content.substr(0, 2) === '? ',
     format: content => {
       content = content.slice(2);
-      return `<div class="idea">✦ ${content}</div>`;
+      return `<div class="idea">✱ ${content}</div>`;
     }
   },
   checkbox: {
@@ -340,7 +340,7 @@ const enterMessage = async () => {
   const result = await message(content);
   recordEntry(content, type, id);
   renderMessage(result, type, id);
-  scrollToBottom();
+  ENTRY.value = type === 'list' ? '* ' : '';
 };
 
 const recordEntry = (content, type, id) => {
@@ -481,12 +481,7 @@ const renderMessage = async (result, type, id) => {
   if(editing) {
     const sibling = document.querySelector(`.message:nth-child(${selectedMessageIndex + 2})`);
     document.querySelector(`.message:nth-child(${selectedMessageIndex + 1})`).remove();
-    // if(type === 'variable') {
-    //   showNoteDetail(noteIndex);
-    // }
-    // else {
-      CONTENT.insertBefore(element, sibling);
-    // }
+    CONTENT.insertBefore(element, sibling);
   }
   else if(injectLine) {
     let before = document.getElementById(injectLine);
@@ -495,6 +490,7 @@ const renderMessage = async (result, type, id) => {
   }
   else {
     CONTENT.appendChild(element);
+    scrollToBottom();
   }
 }
 
@@ -623,8 +619,6 @@ const bindUIEvents = () => {
 
     if(hittingEnter && canSendMessage) {
       enterMessage();
-      ENTRY.value = '';
-      // ENTRY.setAttribute('rows', 1);
     }
     if(ENTRY.value.charAt(ENTRY.value.length - 1) === '$') {
       const varResults = DOC_VARS.map(vbl => {
