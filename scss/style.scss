@@ -254,6 +254,9 @@ body {
 
     .m-c {
       width: 100%;
+      padding: 1rem;
+      background-color: var(--hover-color);
+      border: 1px solid var(--select-color);
     }
 
     svg {

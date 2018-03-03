@@ -605,7 +605,10 @@ body {
   .message.sparkline {
     margin-top: 1rem; }
     .message.sparkline .m-c {
-      width: 100%; }
+      width: 100%;
+      padding: 1rem;
+      background-color: var(--hover-color);
+      border: 1px solid var(--select-color); }
     .message.sparkline svg {
       transform: rotateX(180deg); }
       .message.sparkline svg path {
