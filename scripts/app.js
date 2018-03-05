@@ -106,7 +106,7 @@ const types = {
       content.substr(0, 2) === '? ',
     format: content => {
       content = content.slice(2);
-      return `<div class="idea">✱ ${content}</div>`;
+      return `<div class="idea"><span class="star">★</span> ${content}</div>`;
     }
   },
   checkbox: {
@@ -169,6 +169,10 @@ const types = {
       });
       return `<pre data-async-id="${id}">${content}</pre>`;
     }
+  },
+  image: {
+    match: (content) =>
+      content.match(/]([\s]*)\(/g, '\\]$1\\(')
   },
   url: {
     match: (content) =>

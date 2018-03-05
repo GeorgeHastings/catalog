@@ -625,12 +625,16 @@ body {
   .message.checkbox {
     margin-top: 1rem; }
   .message.idea {
-    margin: 1rem 0 1rem 0rem;
-    color: #f9ac00; }
+    margin: 1rem 0; }
     .message.idea .m-c {
-      padding: 0.5rem 1rem;
       max-width: calc(100% - 2rem);
-      background-color: var(--hover-color); }
+      padding-left: 1.5rem; }
+    .message.idea .star {
+      position: absolute;
+      color: #f9ac00;
+      margin-right: 1rem;
+      margin-left: -1.5rem;
+      vertical-align: bottom; }
   .message.quote {
     color: var(--subtle-text-color);
     margin: 2rem 0 2rem 0rem; }
@@ -662,7 +666,7 @@ body {
     border-top: transparent;
     border-left: transparent;
     border-right: transparent;
-    border-bottom: 1px solid #282f4e;
+    border-bottom: 1px solid var(--border-color);
     width: 100%; }
   .message.url {
     margin: 1rem 0; }
