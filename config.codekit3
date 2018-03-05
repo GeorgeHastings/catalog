@@ -162,6 +162,26 @@
 		"sC": 3,
 		"tS": 0
 		},
+	"\/scripts\/libs\/remarkable.min.js": {
+		"ft": 64,
+		"ma": 0,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "\/scripts\/libs\/remarkable.min-min.js",
+		"oF": 0,
+		"sC": 3,
+		"tS": 0
+		},
+	"\/scripts\/libs\/showdown.min.js": {
+		"ft": 64,
+		"ma": 0,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "\/scripts\/libs\/showdown.min-min.js",
+		"oF": 0,
+		"sC": 3,
+		"tS": 0
+		},
 	"\/scripts\/libs\/tippet.js": {
 		"ft": 64,
 		"ma": 0,

@@ -42,6 +42,7 @@ body {
   --radio-color: $darkgray;
   --var-color: cyan;
   --text-math: cyan;
+  --ic-color: $slate;
 }
 
 .light-theme {
@@ -56,6 +57,7 @@ body {
   --radio-color: $gray;
   --var-color: $blue;
   --text-math: $blue;
+  --ic-color: lighten($lightblue, 2%);
 }
 
 .wrapper,
@@ -345,6 +347,26 @@ body {
     }
   }
 
+  &.rule {
+
+    .m-c {
+      width: 100%;
+    }
+
+    & + .message {
+      margin-top: 0;
+    }
+
+    hr {
+      margin: 2rem 0;
+      border-top: transparent;
+      border-left: transparent;
+      border-right: transparent;
+      border-bottom: 1px solid $slate;
+      width: 100%;
+    }
+  }
+
   &.url {
     margin: 1rem 0;
 
@@ -388,6 +410,7 @@ body {
 }
 
 .m-c {
+
   img {
     width: 100%;
   }
@@ -410,7 +433,7 @@ h1,h2,h3,h4 {
   padding: 0.1rem 0.4rem;
   font-size: 0.85rem;
   color: var(--text-math);
-  background-color: var(--border-color);
+  background-color: var(--ic-color);
   border-radius: 2px;
 }
 

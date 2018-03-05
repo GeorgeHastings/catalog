@@ -1,14 +1,14 @@
 ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-  color: $darkgray;
+  color: var(--focus-color);
 }
 ::-moz-placeholder { /* Firefox 19+ */
-  color: $darkgray;
+  color: var(--focus-color);
 }
 :-ms-input-placeholder { /* IE 10+ */
-  color: $darkgray;
+  color: var(--focus-color);
 }
 :-moz-placeholder { /* Firefox 18- */
-  color: $darkgray;
+  color: var(--focus-color);
 }
 
 input,
@@ -100,12 +100,6 @@ label {
   // input + & {
   //   margin-top: 2rem;
   // }
-}
-
-hr {
-  margin: 2rem 0;
-  border-top: transparent;
-  border-bottom: 1px solid $slate;
 }
 
 //select

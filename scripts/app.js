@@ -57,6 +57,12 @@ const types = {
     format: (content) =>
       content.replace('* ', '')
   },
+  rule: {
+    match: (content) =>
+      content.length === 3 && content.includes('---'),
+    format: (content) =>
+      `<hr>`
+  },
   quote: {
     match: (content) =>
       content.substr(0, 2) === '> ',
@@ -338,6 +344,7 @@ const enterMessage = async () => {
   const id = selectedMessageIndex ? noteslocal[noteIndex].messages[selectedMessageIndex].id : randomString(12);
   const type = getType(content) || 'none';
   const result = await message(content);
+  // const result = converter.makeHtml(content);
   recordEntry(content, type, id);
   renderMessage(result, type, id);
   ENTRY.value = type === 'list' ? '* ' : '';
@@ -391,7 +398,7 @@ const recordEntry = (content, type, id) => {
 
 const save = () => {
   let note = {
-    exerpt: CONTENT.querySelector('.message:first-child .m-c *:first-child').innerText,
+    exerpt: CONTENT.querySelector('.message:first-child .m-c').innerText,
     messages: noteslocal[noteIndex].messages
   };
   noteslocal[noteIndex] = note;
@@ -511,6 +518,7 @@ const showNoteDetail = (index) => {
   DOC_VARS.length = 0;
   renderMessages(index);
   styleSelectedNote(index);
+  ENTRY.focus();
 };
 
 const deleteNote = (index) => {
