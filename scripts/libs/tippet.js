@@ -2,8 +2,8 @@ let contents;
 
 export const tippet = {
   element: function() {
-    if(document.getElementById('Tippet')) {
-      return document.getElementById('Tippet');
+    if($('Tippet')) {
+      return $('Tippet');
     }
     else {
       const wrap = document.createElement('div');

@@ -7,7 +7,7 @@
 		"uuidString": "2FB87862-5C79-467D-BBD7-FB2F4038021A"
 		}
 	],
-"creatorBuild": "26268",
+"creatorBuild": "26330",
 "files": {
 	"\/.jshintrc": {
 		"cB": 0,
@@ -142,6 +142,16 @@
 		"sC": 3,
 		"tS": 0
 		},
+	"\/scripts\/libs\/emoji.js": {
+		"ft": 64,
+		"ma": 0,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "\/scripts\/libs\/emoji-min.js",
+		"oF": 0,
+		"sC": 3,
+		"tS": 0
+		},
 	"\/scripts\/libs\/localforage.min.js": {
 		"ft": 64,
 		"ma": 0,
@@ -158,6 +168,16 @@
 		"mi": 1,
 		"oA": 0,
 		"oAP": "\/scripts\/libs\/rainbow-custom.min-min.js",
+		"oF": 0,
+		"sC": 3,
+		"tS": 0
+		},
+	"\/scripts\/libs\/remarkable.min-min.js": {
+		"ft": 64,
+		"ma": 0,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "\/scripts\/libs\/remarkable.min-min-min.js",
 		"oF": 0,
 		"sC": 3,
 		"tS": 0

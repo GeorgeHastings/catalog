@@ -1,7 +1,13 @@
-const ENTRY = document.getElementById('entry');
-const CONTENT = document.getElementById('detailContent');
-const LISTING = document.getElementById('listing');
+const $ = (id) => {
+  return document.getElementById(id);
+};
+const ENTRY = $('entry');
+const CONTENT = $('detailContent');
+const LISTING = $('listing');
+const META = $('detailMeta');
 const URL_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/;
+
+const KEYS_PRESSED = [];
 
 const DOC_VARS = [];
 
@@ -45,6 +51,44 @@ const getThumbnail = (site, callback) => {
   }).catch(error => {
     callback(false);
   });
+};
+
+var rgxFindMatchPos = function (str, left, right, flags) {
+  'use strict';
+  var f = flags || '',
+      g = f.indexOf('g') > -1,
+      x = new RegExp(left + '|' + right, 'g' + f.replace(/g/g, '')),
+      l = new RegExp(left, f.replace(/g/g, '')),
+      pos = [],
+      t, s, m, start, end;
+
+  do {
+    t = 0;
+    while ((m = x.exec(str))) {
+      if (l.test(m[0])) {
+        if (!(t++)) {
+          s = x.lastIndex;
+          start = s - m[0].length;
+        }
+      } else if (t) {
+        if (!--t) {
+          end = m.index + m[0].length;
+          var obj = {
+            left: {start: start, end: s},
+            match: {start: s, end: m.index},
+            right: {start: m.index, end: end},
+            wholeMatch: {start: start, end: end}
+          };
+          pos.push(obj);
+          if (!g) {
+            return pos;
+          }
+        }
+      }
+    }
+  } while (t && (x.lastIndex = s));
+
+  return pos;
 };
 
 const createElement = (markup) =>
@@ -172,7 +216,10 @@ const types = {
   },
   image: {
     match: (content) =>
-      content.match(/]([\s]*)\(/g, '\\]$1\\(')
+      content.match(/]([\s]*)\(/g, '\\]$1\\('),
+    format: (content) => {
+      return content;
+    }
   },
   url: {
     match: (content) =>
@@ -239,6 +286,13 @@ const inlineStyles = {
     input: ['_', '_'],
     output: ['<i>', '</i>']
   },
+  emoji: {
+    input: [':', ':'],
+    output: ['', ''],
+    process: (content) => {
+      return emojis[content] || content;
+    }
+  },
   code: {
     input: ['`', '`'],
     output: ['<pre class="inline-code">', '</pre>']
@@ -277,7 +331,7 @@ const getInlineStyle = (content, expression) => {
 
 const wrap = (content, params) => {
   let result = content.slice(params.open + 1, params.close + 1);
-  if(params.process) {
+  if(params.inputOpen[0] === '@') {
     let resP = new Promise(resolve => {
       params.process(result, (res) => {
         const path = content.substr(params.close + 3).split("/")[0];
@@ -297,6 +351,9 @@ const wrap = (content, params) => {
     });
     return resP;
   }
+  if(params.inputOpen[0] === ':') {
+    return content.replace(`:${result}:`, params.process(result));
+  }
   else {
     content = content.replace(`${params.inputOpen}${result}${params.inputClose}`, `${params.outputOpen}${result}${params.outputClose}`);
     return content;
@@ -315,7 +372,7 @@ const getType = (content) => {
 
 const fillInVars = (content) => {
   DOC_VARS.forEach(vbl => {
-    content = content.replace(vbl.name, vbl.val);
+    content = replaceAll(content, vbl.name, vbl.val);
   });
   return content;
 };
@@ -348,7 +405,6 @@ const enterMessage = async () => {
   const id = selectedMessageIndex ? noteslocal[noteIndex].messages[selectedMessageIndex].id : randomString(12);
   const type = getType(content) || 'none';
   const result = await message(content);
-  // const result = converter.makeHtml(content);
   recordEntry(content, type, id);
   renderMessage(result, type, id);
   ENTRY.value = type === 'list' ? '* ' : '';
@@ -361,6 +417,7 @@ const recordEntry = (content, type, id) => {
     if(!notes) {
       const note = {
         exerpt: CONTENT.querySelector('.message:first-child .m-c *:first-child').innerText,
+        created: new Date(),
         messages: [{
           id: id,
           content: content,
@@ -379,7 +436,7 @@ const recordEntry = (content, type, id) => {
           type: type
         }
         if(injectLine) {
-          const injectIndex = [...document.querySelectorAll('.message')].indexOf(document.getElementById(injectLine));
+          const injectIndex = [...document.querySelectorAll('.message')].indexOf($(injectLine));
           noteslocal[noteIndex].messages.splice(injectIndex - 1, 0, messageData);
         }
         else {
@@ -409,13 +466,23 @@ const save = () => {
   localforage.setItem('notes', noteslocal);
 };
 
+const createTimeStamp = (date) => {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+  const days = ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat'];
+  const now = date || new Date();
+  const timestamp = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()} ${now.getYear() + 1900}`;
+  return timestamp;
+};
+
 const newNote = () => {
   let note = {
     exerpt: 'New Note',
+    created: new Date(),
     messages: []
   };
   noteslocal.unshift(note);
-  renderNotes(noteslocal);
+  console.log(noteslocal)
+  renderNoteListing(noteslocal);
   showNoteDetail(0);
 };
 
@@ -495,13 +562,12 @@ const renderMessage = async (result, type, id) => {
     CONTENT.insertBefore(element, sibling);
   }
   else if(injectLine) {
-    let before = document.getElementById(injectLine);
+    let before = $(injectLine);
     document.querySelector('.inject-line').remove();
     CONTENT.insertBefore(element, before);
   }
   else {
     CONTENT.appendChild(element);
-    scrollToBottom();
   }
 }
 
@@ -513,14 +579,22 @@ const renderMessages = (index) => {
       let result = await message(note.content);
       renderMessage(result, note.type, note.id);
     });
+    scrollToBottom();
   }
 }
 /* jshint ignore:end */
+
+const renderNoteMetaData = (index) => {
+  const date = noteslocal[index].created;
+  console.log(noteslocal[index]);
+  META.innerHTML = createTimeStamp(date);
+};
 
 const showNoteDetail = (index) => {
   noteIndex = index;
   DOC_VARS.length = 0;
   renderMessages(index);
+  renderNoteMetaData(index);
   styleSelectedNote(index);
   ENTRY.focus();
 };
@@ -528,16 +602,15 @@ const showNoteDetail = (index) => {
 const deleteNote = (index) => {
   noteslocal.splice(index, 1);
   localforage.setItem('notes', noteslocal);
-  renderNotes(noteslocal);
+  renderNoteListing(noteslocal);
 };
 
-const renderNotes = (notes) => {
+const renderNoteListing = (notes) => {
   LISTING.innerHTML = '';
   notes.forEach((note, index) => {
     const listing = `<li onclick="showNoteDetail(${index})"><span>${note.exerpt.replace('▶', '')}</span><div class="delete" onclick="deleteNote(${index})">✕</div></li>`;
     LISTING.innerHTML += listing;
   });
-  showNoteDetail(0);
 };
 
 const noNotesYet = () => {
@@ -555,7 +628,8 @@ const loadNotes = () => {
   localforage.getItem('notes').then(notes => {
     if(notes) {
       noteslocal = notes;
-      renderNotes(noteslocal);
+      renderNoteListing(noteslocal);
+      showNoteDetail(0);
     }
     else {
       noteslocal.push(basics);
@@ -578,7 +652,6 @@ const bindMessageEvents = (element) => {
 
   element.querySelector('.message').ondblclick = selectMessage;
 
-  // element.querySelector('.edit-message').onclick = selectMessage;
   handle.onclick = insertInjectLine;
   if(checkbox) {
     checkbox.onchange = (e) => {
@@ -612,35 +685,131 @@ const fitEntryContent = () => {
   }
 };
 
-const bindUIEvents = () => {
+const autoSuggestOpen = () => {
+  return document.querySelector('.as-visible') || false;
+};
 
-  ENTRY.onkeydown = (e) => {
-    const hittingEnter = e.keyCode === 13;
-    if(hittingEnter) {
-      e.preventDefault();
-      if(selectedMessageIndex && ENTRY.value.length < 1) {
-        deleteMessage();
-        ENTRY.setAttribute('rows', 1);
+const autosuggest = {
+  el: $('autoSuggest'),
+  isOpen: () =>
+    document.querySelector('.as-visible') || false,
+  query: (indicator, results, prop) => {
+    let matches = [];
+    for(let i = ENTRY.selectionStart; i >= 0; i--) {
+      if(ENTRY.value[i] === ' ') {
+        return;
+      }
+      else if(ENTRY.value[i] === indicator) {
+        let lookup = '';
+        let j = i;
+        while(ENTRY.value[j] !== ' ' && ENTRY.value[j] !== undefined) {
+          lookup += ENTRY.value[j];
+          j++;
+        }
+        matches = results.map(item => {
+          return item.name || item;
+        }).filter(result => result.includes(lookup));
+
+        if(matches.length > 0 && !autoSuggestOpen()) {
+          const results = `
+            <ul>
+              ${matches.map((match, index) => {
+                return `<li ${index < 1 ? 'class="as-selected"': ''}>${match}</li>`;
+              }).join(' ')}
+            </ul>
+          `;
+          autosuggest.el.classList.add('as-visible');
+          autosuggest.el.setAttribute('style', `transform: translate3d(${ENTRY.selectionStart * 8.5 + 65}px,0,0)`);
+          autosuggest.el.innerHTML = results;
+          return;
+        }
+      }
+      else {
+        autosuggest.el.innerHTML = '';
+        autosuggest.el.classList.remove('as-visible');
       }
     }
-  };
-
-  ENTRY.onkeyup = (e) => {
-    const hittingEnter = e.keyCode === 13;
-    const canSendMessage = ENTRY.value.length > 1;
-
-    if(hittingEnter && canSendMessage) {
-      enterMessage();
+  },
+  fill: (indicator, replace) => {
+    for(let i = ENTRY.selectionStart - 1; i >= 0; i--) {
+      let lookup = '';
+      if(ENTRY.value[i] === ' ') {
+        return;
+      }
+      else if(ENTRY.value[i] === indicator) {
+        let j = i;
+        const vals = [...ENTRY.value];
+        while(ENTRY.value[j] !== ' ' && ENTRY.value[j] !== undefined) {
+          lookup += ENTRY.value[j];
+          j++;
+        }
+        vals.splice(i, lookup.length, ...replace);
+        ENTRY.value = vals.join('');
+        autosuggest.el.innerHTML = '';
+        autosuggest.el.classList.remove('as-visible');
+      }
     }
-    if(ENTRY.value.charAt(ENTRY.value.length - 1) === '$') {
-      const varResults = DOC_VARS.map(vbl => {
-        return vbl.name;
-      });
+  }
+};
+
+const key = (key) => {
+  switch(key) {
+    case 'ArrowUp':
+      return 38;
+    case 'ArrowDown':
+      return 40;
+    case 'Shift':
+      return 16;
+    case 'Command':
+      return 91;
+    case 'Backspace':
+      return 8;
+    case 'Enter':
+      return 13;
+  }
+};
+
+const keyHeld = (which) => {
+  const test = key(which);
+  let res = false;
+  KEYS_PRESSED.forEach((pressed) => {
+    if(pressed === test) {
+      res = true;
     }
-    if(ENTRY === document.activeElement && shifted) {
-      let toSelect;
-      let toDeselect;
-      if(e.key === 'ArrowUp') {
+  });
+  return res;
+};
+
+const selectWithArrowKeys = (e) => {
+  const direction = e.keyCode === key('ArrowUp') ? 'up' : 'down';
+  if(ENTRY === document.activeElement) {
+    let toSelect;
+    let toDeselect;
+    const as = autosuggest.isOpen() || false;
+
+    if(as) {
+      const items = as.querySelectorAll('li');
+      const selected = as.querySelector('.as-selected');
+      const increment = direction === 'up' ? -1 : 1;
+      let index = [...items].indexOf(selected);
+      let next;
+
+      if(index + increment < items.length) {
+        next = index + increment;
+      }
+      else {
+        next = 0;
+      }
+      if(index + increment < 0) {
+        next = items.length - 1;
+      }
+
+      selected.classList.remove('as-selected');
+      items[next].classList.add('as-selected');
+    }
+
+    if(direction === 'up') {
+      if(keyHeld('Shift')) {
         if(selectedMessageIndex === null) {
           toSelect = CONTENT.querySelector('.message:last-child');
           toDeselect = 0;
@@ -652,12 +821,56 @@ const bindUIEvents = () => {
         selectMessage(toSelect);
         CONTENT.querySelector(`.message:nth-child(${selectedMessageIndex + toDeselect})`).classList.remove('message-selected');
       }
-      if(e.key === 'ArrowDown') {
+
+    }
+    if(direction === 'down') {
+      if(keyHeld('Shift')) {
         toSelect = CONTENT.querySelector(`.message:nth-child(${selectedMessageIndex + 2})`);
         toDeselect = 0;
         selectMessage(toSelect);
         CONTENT.querySelector(`.message:nth-child(${selectedMessageIndex + toDeselect})`).classList.remove('message-selected');
       }
+    }
+  }
+};
+
+const bindUIEvents = () => {
+
+  ENTRY.onkeydown = (e) => {
+    const hittingEnter = e.keyCode === key('Enter');
+    if(hittingEnter) {
+      e.preventDefault();
+      if(selectedMessageIndex && ENTRY.value.length < 1) {
+        deleteMessage();
+        ENTRY.setAttribute('rows', 1);
+      }
+    }
+    KEYS_PRESSED.push(e.keyCode);
+  };
+
+  ENTRY.onkeyup = (e) => {
+    const hittingEnter = e.keyCode === key('Enter');
+    const canSendMessage = ENTRY.value.length > 1;
+    const as = autosuggest.isOpen();
+
+    KEYS_PRESSED.forEach((key, index) => {
+      if(key === e.keyCode) {
+        KEYS_PRESSED.splice(index, 1);
+      }
+    });
+
+    if(as && e.keyCode === key('Enter')) {
+      autosuggest.fill('$', document.querySelector('.as-selected').innerText);
+      return;
+    }
+    if(hittingEnter && canSendMessage) {
+      enterMessage();
+    }
+    if(e.keyCode === key('ArrowUp') || e.keyCode === key('ArrowDown')) {
+      selectWithArrowKeys(e);
+    }
+    else {
+      autosuggest.query('$', DOC_VARS, 'name');
     }
     fitEntryContent();
   };
@@ -675,18 +888,6 @@ const bindUIEvents = () => {
     }
   };
 
-  document.onkeydown = (e) => {
-    if(e.keyCode === 16){
-      shifted = true;
-    }
-  };
-
-  document.onkeyup = (e) => {
-    if(e.keyCode === 16){
-      shifted = false;
-    }
-  };
-
   document.body.onkeyup = (e) => {
     if(e.key === 'Backspace') {
       let selected = document.querySelectorAll('.message--selected');
@@ -696,11 +897,11 @@ const bindUIEvents = () => {
     }
   };
 
-  document.getElementById('themeLight').onclick = () => {
+  $('themeLight').onclick = () => {
     document.body.classList = 'light-theme';
   };
 
-  document.getElementById('themeDark').onclick = () => {
+  $('themeDark').onclick = () => {
     document.body.classList = 'dark-theme';
   };
 };
