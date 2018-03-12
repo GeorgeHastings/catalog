@@ -10,6 +10,13 @@ const URL_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.
 const KEYS_PRESSED = [];
 
 const DOC_VARS = [];
+const EMOJIS = (() => {
+  const result = [];
+  for(let emoji in emojis) {
+    result.push(emoji);
+  }
+  return result;
+})();
 
 let noteslocal = [];
 let noteIndex = 0;
@@ -176,7 +183,7 @@ const types = {
     match: (content) =>
       /^#[0-9A-F]{6}$/i.test(content),
     format: (content) => {
-      return content;
+      return `<div class="color"><div class="color-swatch" style="background-color: ${content}"></div>${content}</div>`;
     }
   },
   sparkline: {
@@ -282,16 +289,16 @@ const inlineStyles = {
     input: ['*', '*'],
     output: ['<b>', '</b>']
   },
-  italic: {
-    input: ['_', '_'],
-    output: ['<i>', '</i>']
-  },
   emoji: {
     input: [':', ':'],
     output: ['', ''],
     process: (content) => {
       return emojis[content] || content;
     }
+  },
+  italic: {
+    input: ['_', '_'],
+    output: ['<i>', '</i>']
   },
   code: {
     input: ['`', '`'],
@@ -685,68 +692,87 @@ const fitEntryContent = () => {
   }
 };
 
-const autoSuggestOpen = () => {
-  return document.querySelector('.as-visible') || false;
-};
-
-const autosuggest = {
+const autoSuggest = {
   el: $('autoSuggest'),
+  hide: () => {
+    autoSuggest.el.innerHTML = '';
+    autoSuggest.el.classList.remove('as-visible');
+  },
   isOpen: () =>
     document.querySelector('.as-visible') || false,
-  query: (indicator, results, prop) => {
-    let matches = [];
+  listen: (indicator) => {
     for(let i = ENTRY.selectionStart; i >= 0; i--) {
       if(ENTRY.value[i] === ' ') {
-        return;
+        return false;
       }
       else if(ENTRY.value[i] === indicator) {
+        return true;
+      }
+    }
+  },
+  query: (params) => {
+    const indicator = params.indicator.symbol;
+    const inc = params.indicator.include;
+    const stopper = inc ? ' ' : indicator;
+    let matches = [];
+    autoSuggest.currentIndicator = indicator;
+    autoSuggest.indicatorIncluded = inc;
+
+    for(let i = ENTRY.selectionStart; i >= 0; i--) {
+      if(ENTRY.value[i] === stopper) {
+        autoSuggest.hide();
+        return;
+      }
+      else if(ENTRY.value[i - (inc ? 0 : 1)] === indicator) {
         let lookup = '';
         let j = i;
-        while(ENTRY.value[j] !== ' ' && ENTRY.value[j] !== undefined) {
+
+        while(ENTRY.value[j] !== stopper && ENTRY.value[j] !== undefined) {
           lookup += ENTRY.value[j];
           j++;
         }
-        matches = results.map(item => {
-          return item.name || item;
-        }).filter(result => result.includes(lookup));
+        if((j - i) > params.start) {
+          matches = params.set.filter(result => result.includes(lookup));
 
-        if(matches.length > 0 && !autoSuggestOpen()) {
-          const results = `
-            <ul>
-              ${matches.map((match, index) => {
-                return `<li ${index < 1 ? 'class="as-selected"': ''}>${match}</li>`;
-              }).join(' ')}
-            </ul>
-          `;
-          autosuggest.el.classList.add('as-visible');
-          autosuggest.el.setAttribute('style', `transform: translate3d(${ENTRY.selectionStart * 8.5 + 65}px,0,0)`);
-          autosuggest.el.innerHTML = results;
-          return;
+          if(matches.length > 0 && !autoSuggest.isOpen()) {
+            const results = `
+              <ul>
+                ${matches.map((match, index) => {
+                  return `<li ${index < 1 ? 'class="as-selected"': ''}>${params.display ? params.display(match) : match}</li>`;
+                }).join(' ')}
+              </ul>
+            `;
+            autoSuggest.el.classList.add('as-visible');
+            autoSuggest.el.setAttribute('style', `transform: translate3d(${ENTRY.selectionStart * 8.5 + 65}px,0,0)`);
+            autoSuggest.el.innerHTML = results;
+            return;
+          }
         }
       }
       else {
-        autosuggest.el.innerHTML = '';
-        autosuggest.el.classList.remove('as-visible');
+        autoSuggest.hide();
       }
     }
   },
   fill: (indicator, replace) => {
-    for(let i = ENTRY.selectionStart - 1; i >= 0; i--) {
+    const inc = autoSuggest.indicatorIncluded;
+    const stopper = inc ? ' ' : indicator + ' ';
+    for(let i = ENTRY.selectionStart; i >= 0; i--) {
       let lookup = '';
-      if(ENTRY.value[i] === ' ') {
+      if(ENTRY.value[i] === stopper) {
         return;
       }
-      else if(ENTRY.value[i] === indicator) {
+      else if(ENTRY.value[i - (inc ? 0 : 1)] === indicator) {
         let j = i;
         const vals = [...ENTRY.value];
-        while(ENTRY.value[j] !== ' ' && ENTRY.value[j] !== undefined) {
+        while(ENTRY.value[j] !== stopper && ENTRY.value[j] !== undefined) {
           lookup += ENTRY.value[j];
           j++;
         }
         vals.splice(i, lookup.length, ...replace);
-        ENTRY.value = vals.join('');
-        autosuggest.el.innerHTML = '';
-        autosuggest.el.classList.remove('as-visible');
+        ENTRY.value = vals.join('') + stopper;
+        autoSuggest.el.innerHTML = '';
+        autoSuggest.el.classList.remove('as-visible');
       }
     }
   }
@@ -785,7 +811,7 @@ const selectWithArrowKeys = (e) => {
   if(ENTRY === document.activeElement) {
     let toSelect;
     let toDeselect;
-    const as = autosuggest.isOpen() || false;
+    const as = autoSuggest.isOpen() || false;
 
     if(as) {
       const items = as.querySelectorAll('li');
@@ -804,7 +830,7 @@ const selectWithArrowKeys = (e) => {
         next = items.length - 1;
       }
 
-      selected.classList.remove('as-selected');
+      items[index].classList.remove('as-selected');
       items[next].classList.add('as-selected');
     }
 
@@ -821,9 +847,8 @@ const selectWithArrowKeys = (e) => {
         selectMessage(toSelect);
         CONTENT.querySelector(`.message:nth-child(${selectedMessageIndex + toDeselect})`).classList.remove('message-selected');
       }
-
     }
-    if(direction === 'down') {
+    else {
       if(keyHeld('Shift')) {
         toSelect = CONTENT.querySelector(`.message:nth-child(${selectedMessageIndex + 2})`);
         toDeselect = 0;
@@ -851,7 +876,7 @@ const bindUIEvents = () => {
   ENTRY.onkeyup = (e) => {
     const hittingEnter = e.keyCode === key('Enter');
     const canSendMessage = ENTRY.value.length > 1;
-    const as = autosuggest.isOpen();
+    const as = autoSuggest.isOpen();
 
     KEYS_PRESSED.forEach((key, index) => {
       if(key === e.keyCode) {
@@ -860,17 +885,55 @@ const bindUIEvents = () => {
     });
 
     if(as && e.keyCode === key('Enter')) {
-      autosuggest.fill('$', document.querySelector('.as-selected').innerText);
+      autoSuggest.fill(autoSuggest.currentIndicator, document.querySelector('.as-selected .target').innerText);
       return;
     }
     if(hittingEnter && canSendMessage) {
       enterMessage();
     }
     if(e.keyCode === key('ArrowUp') || e.keyCode === key('ArrowDown')) {
+      e.preventDefault();
       selectWithArrowKeys(e);
     }
     else {
-      autosuggest.query('$', DOC_VARS, 'name');
+      if(autoSuggest.listen('$')) {
+        autoSuggest.query({
+          indicator: {
+            symbol: '$',
+            include: true
+          },
+          set: DOC_VARS.map(v => {
+            return v.name;
+          }),
+          start: 0,
+          display: (match) => {
+            let val;
+            DOC_VARS.forEach(v => {
+              if(v.name === match) {
+                val = v.val;
+                return;
+              }
+            })
+            return `<span class="target">${match}</span> ${val}`;
+          }
+        });
+      }
+      if(autoSuggest.listen(':')) {
+        autoSuggest.query({
+          indicator: {
+            symbol: ':',
+            include: false
+          },
+          set: EMOJIS,
+          start: 1,
+          display: (match) => {
+            return emojis[match] + ' ' + `<span class="target">${match}</span>`;
+          }
+        });
+      }
+    }
+    if(ENTRY.value.length === 0) {
+      autoSuggest.hide();
     }
     fitEntryContent();
   };
@@ -886,6 +949,7 @@ const bindUIEvents = () => {
       document.querySelector('.inject-line').remove();
       injectLine = null;
     }
+    autoSuggest.hide();
   };
 
   document.body.onkeyup = (e) => {
