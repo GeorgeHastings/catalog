@@ -497,14 +497,11 @@ body {
   .listing ul li {
     padding: 0.85rem;
     font-size: 0.85rem;
-    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
     display: flex;
     justify-content: space-between; }
-    .listing ul li .delete {
-      color: var(--backdrop-color);
-      cursor: pointer; }
-      .listing ul li .delete:hover {
-        color: var(--text-color); }
+    .listing ul li:hover {
+      background-color: var(--hover-color); }
   .listing ul li span {
     margin-right: 1rem;
     color: var(--subtle-text-color);
@@ -531,11 +528,26 @@ body {
     margin-bottom: 0; }
 
 .detail-header {
-  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
   margin: 0rem 4rem 0rem 4rem;
   color: var(--subtle-text-color);
-  font-size: 0.7rem;
-  line-height: 50px; }
+  font-size: 0.7rem; }
+
+.note-controls {
+  display: flex;
+  align-items: center; }
+  .note-controls .trash,
+  .note-controls .archive {
+    vertical-align: middle;
+    cursor: pointer; }
+  .note-controls .trash svg {
+    height: 16px;
+    margin-left: 1rem; }
+  .note-controls .archive svg {
+    width: 17px; }
 
 .detail-content-entry {
   position: absolute;
@@ -617,6 +629,8 @@ body {
     margin-top: 1rem; }
     .message.text .m-c, .message.quote .m-c {
       white-space: pre-line; }
+  .message.header {
+    margin-top: 1rem; }
   .message.math pre {
     color: var(--text-math); }
   .message.code, .message.math {

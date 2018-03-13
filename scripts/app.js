@@ -488,7 +488,6 @@ const newNote = () => {
     messages: []
   };
   noteslocal.unshift(note);
-  console.log(noteslocal)
   renderNoteListing(noteslocal);
   showNoteDetail(0);
 };
@@ -524,7 +523,6 @@ const insertInjectLine = (e) => {
   const hr = createElement(`<div class="inject-line"></div>`);
   injectLine = el.getAttribute('id');
   CONTENT.insertBefore(hr, el);
-  // el.classList.add('insert-above');
   ENTRY.focus();
 };
 
@@ -594,7 +592,7 @@ const renderMessages = (index) => {
 const renderNoteMetaData = (index) => {
   const date = noteslocal[index].created;
   console.log(noteslocal[index]);
-  META.innerHTML = createTimeStamp(date);
+  META.querySelector('.time-stamp').innerHTML = createTimeStamp(date);
 };
 
 const showNoteDetail = (index) => {
@@ -610,12 +608,13 @@ const deleteNote = (index) => {
   noteslocal.splice(index, 1);
   localforage.setItem('notes', noteslocal);
   renderNoteListing(noteslocal);
+  showNoteDetail(index);
 };
 
 const renderNoteListing = (notes) => {
   LISTING.innerHTML = '';
   notes.forEach((note, index) => {
-    const listing = `<li onclick="showNoteDetail(${index})"><span>${note.exerpt.replace('▶', '')}</span><div class="delete" onclick="deleteNote(${index})">✕</div></li>`;
+    const listing = `<li onclick="showNoteDetail(${index})"><span>${note.exerpt.replace('▶', '')}</span></li>`;
     LISTING.innerHTML += listing;
   });
 };
