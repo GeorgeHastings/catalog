@@ -102,6 +102,21 @@ const createElement = (markup) =>
   document.createRange().createContextualFragment(markup);
 
 const types = {
+  code: {
+    match: (content) =>
+      content.substr(0, 3) === '```' && content.substr(-3) === '```',
+    format: (content) => {
+      content = content.slice(3, -3);
+      const lang = detectLang(content);
+      const id = randomString(12);
+      Rainbow.color(content, lang, function(highlightedCode) {
+        const el = document.querySelector(`[data-async-id="${id}"]`);
+        el.setAttribute('data-language', lang);
+        el.innerHTML = highlightedCode;
+      });
+      return `<pre data-async-id="${id}">${content}</pre>`;
+    }
+  },
   list: {
     match: (content) =>
       content.substr(0, 2) === '* ',
@@ -204,21 +219,6 @@ const types = {
         <svg width="100%" height="80px" viewBox="0 0 ${width} ${height + 1}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
           <path id="sparkLine" d="${d}" fill="transparent" stroke-width="1"/>
         </svg>`;
-    }
-  },
-  code: {
-    match: (content) =>
-      content.substr(0, 3) === '```' && content.substr(-3) === '```',
-    format: (content) => {
-      content = content.slice(3, -3);
-      const lang = detectLang(content);
-      const id = randomString(12);
-      Rainbow.color(content, lang, function(highlightedCode) {
-        const el = document.querySelector(`[data-async-id="${id}"]`);
-        el.setAttribute('data-language', lang);
-        el.innerHTML = highlightedCode;
-      });
-      return `<pre data-async-id="${id}">${content}</pre>`;
     }
   },
   image: {
