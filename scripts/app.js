@@ -960,11 +960,11 @@ const bindUIEvents = () => {
     }
   };
 
-  $('themeLight').onclick = () => {
+  $('#themeLight').onclick = () => {
     document.body.classList = 'light-theme';
   };
 
-  $('themeDark').onclick = () => {
+  $('#themeDark').onclick = () => {
     document.body.classList = 'dark-theme';
   };
 };
