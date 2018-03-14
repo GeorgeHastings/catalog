@@ -1,10 +1,10 @@
 const $ = (id) => {
-  return document.getElementById(id);
+  return document.querySelector(id);
 };
-const ENTRY = $('entry');
-const CONTENT = $('detailContent');
-const LISTING = $('listing');
-const META = $('detailMeta');
+const ENTRY = $('#entry');
+const CONTENT = $('#detailContent');
+const LISTING = $('#listing');
+const META = $('#detailMeta');
 const URL_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/;
 
 const KEYS_PRESSED = [];
@@ -28,7 +28,7 @@ let dragStartY;
 let shifted = false;
 
 const scrollToBottom = () => {
-  document.querySelector('.detail').scrollTop += 15000;
+  $('.detail').scrollTop += 15000;
 };
 
 const escapeRegExp = (str) =>
@@ -585,7 +585,6 @@ const renderMessages = (index) => {
       let result = await message(note.content);
       renderMessage(result, note.type, note.id);
     });
-    scrollToBottom();
   }
 }
 /* jshint ignore:end */
