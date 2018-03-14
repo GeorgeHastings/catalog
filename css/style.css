@@ -469,7 +469,6 @@ body {
 
 .listing-header {
   height: 50px;
-  border-bottom: 1px solid var(--border-color);
   padding: 0 1rem;
   align-items: center;
   display: flex;
@@ -495,7 +494,7 @@ body {
   width: 250px;
   border-right: 1px solid var(--border-color); }
   .listing ul li {
-    padding: 0.85rem;
+    padding: 0.85rem 1rem;
     font-size: 0.85rem;
     cursor: pointer;
     display: flex;
@@ -609,7 +608,6 @@ body {
 
 .rail {
   min-width: 250px;
-  border-left: 1px solid var(--border-color);
   padding: 2rem;
   font-size: 0.85rem;
   color: var(--subtle-text-color); }
@@ -639,7 +637,6 @@ body {
       width: 100%;
       padding: 1rem;
       font-family: "Roboto Mono";
-      letter-spacing: -0.2px;
       background-color: var(--hover-color);
       border: 1px solid var(--select-color);
       overflow-x: scroll;
@@ -699,7 +696,7 @@ body {
     color: var(--subtle-text-color);
     margin: 2rem 0 2rem 0rem; }
     .message.quote .m-c {
-      padding-left: 2rem;
+      padding-left: 1rem;
       max-width: calc(100% - 2rem);
       border-left: 3px solid var(--border-color); }
     .message.quote + .message.quote {
@@ -770,8 +767,8 @@ h1:focus, h2:focus, h3:focus, h4:focus {
   letter-spacing: -0.2px;
   padding: 0.1rem 0.4rem;
   font-size: 0.85rem;
-  color: var(--text-math);
-  background-color: var(--ic-color);
+  color: #e244a0;
+  background-color: var(--select-color);
   border-radius: 2px; }
 
 .handle {

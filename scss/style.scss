@@ -69,7 +69,7 @@ body {
 
 .listing-header {
   height: 50px;
-  border-bottom: 1px solid var(--border-color);
+  // border-bottom: 1px solid var(--border-color);
   padding: 0 1rem;
   align-items: center;
   @include flex-row;
@@ -108,7 +108,7 @@ body {
   ul {
 
     li {
-      padding: 0.85rem;
+      padding: 0.85rem 1rem;
       font-size: 0.85rem;
       cursor: pointer;
       @include flex-row;
@@ -160,7 +160,6 @@ body {
   margin: 0rem 4rem 0rem 4rem;
   color: var(--subtle-text-color);
   font-size: 0.7rem;
-  // line-height: 50px;
 }
 
 .note-controls {
@@ -261,7 +260,7 @@ body {
 
 .rail {
   min-width: 250px;
-  border-left: 1px solid var(--border-color);
+  // border-left: 1px solid var(--border-color);
   padding: 2rem;
   font-size: 0.85rem;
   color: var(--subtle-text-color);
@@ -308,7 +307,6 @@ body {
       width: 100%;
       padding: 1rem;
       font-family: $mono;
-      letter-spacing: -0.2px;
       background-color: var(--hover-color);
       border: 1px solid var(--select-color);
       overflow-x: scroll;
@@ -403,7 +401,7 @@ body {
     margin: 2rem 0 2rem 0rem;
 
     .m-c {
-      padding-left: 2rem;
+      padding-left: 1rem;
       max-width: calc(100% - 2rem);
       border-left: 3px solid var(--border-color);
     }
@@ -520,8 +518,8 @@ h1,h2,h3,h4 {
   letter-spacing: -0.2px;
   padding: 0.1rem 0.4rem;
   font-size: 0.85rem;
-  color: var(--text-math);
-  background-color: var(--ic-color);
+  color: #e244a0;
+  background-color: var(--select-color);
   border-radius: 2px;
 }
 
@@ -567,7 +565,6 @@ h1,h2,h3,h4 {
 }
 
 .insert-above {
-  // border-top: 1px solid var(--text-math);
   box-shadow: 0 -2px 0 var(--text-math);
 }
 

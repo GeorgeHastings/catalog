@@ -573,6 +573,7 @@ const renderMessage = async (result, type, id) => {
   }
   else {
     CONTENT.appendChild(element);
+    scrollToBottom();
   }
 }
 
