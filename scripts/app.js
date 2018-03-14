@@ -692,7 +692,7 @@ const fitEntryContent = () => {
 };
 
 const autoSuggest = {
-  el: $('autoSuggest'),
+  el: $('#autoSuggest'),
   hide: () => {
     autoSuggest.el.innerHTML = '';
     autoSuggest.el.classList.remove('as-visible');
