@@ -5,7 +5,7 @@ const ENTRY = $('#entry');
 const CONTENT = $('#detailContent');
 const LISTING = $('#listing');
 const META = $('#detailMeta');
-const URL_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/;
+const URL_REGEX = /^[^\[(.*?)\]]((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/;
 
 const KEYS_PRESSED = [];
 
@@ -39,6 +39,23 @@ const replaceAll = (str, find, replace) =>
 
 const randomString = (length) =>
   Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
+
+const sprintf = (format, ...args) => {
+    let i = 0;
+    return format.replace(/%s/g, () => args[i++]);
+};
+
+const setLightTheme = () => {
+  document.body.classList = 'light-theme';
+  localforage.setItem('theme', 'light-theme');
+  $('#themeLight').checked = true;
+};
+
+const setDarkTheme = () => {
+  document.body.classList = 'dark-theme';
+  localforage.setItem('theme', 'dark-theme');
+  $('#themeDark').checked = true;
+};
 
 const getThumbnail = (site, callback) => {
   const API = `https://api.letsvalidate.com/v1/thumbs/?url=${site}&output=json`;
@@ -101,113 +118,17 @@ var rgxFindMatchPos = function (str, left, right, flags) {
 const createElement = (markup) =>
   document.createRange().createContextualFragment(markup);
 
-const types = {
-  code: {
-    match: (content) =>
-      content.substr(0, 3) === '```' && content.substr(-3) === '```',
-    format: (content) => {
-      content = content.slice(3, -3);
-      const lang = detectLang(content);
-      const id = randomString(12);
-      Rainbow.color(content, lang, function(highlightedCode) {
-        const el = document.querySelector(`[data-async-id="${id}"]`);
-        el.setAttribute('data-language', lang);
-        el.innerHTML = highlightedCode;
-      });
-      return `<pre data-async-id="${id}">${content}</pre>`;
-    }
-  },
-  list: {
-    match: (content) =>
-      content.substr(0, 2) === '* ',
-    format: (content) =>
-      content.replace('* ', '')
-  },
+const blocks = {
   rule: {
-    match: (content) =>
-      content.length === 3 && content.includes('---'),
-    format: (content) =>
+    regex: /^\---/,
+    wrap: () =>
       `<hr>`
   },
-  quote: {
-    match: (content) =>
-      content.substr(0, 2) === '> ',
-    format: (content) =>
-      content.substr(1)
-  },
-  header: {
-    match: (content) =>
-      content.includes('# '),
-    format: (content) => {
-      let count = 1;
-      let tag;
-      while(count < 5) {
-        if(content[count] === '#') {
-          count++;
-        }
-        else {
-          tag = `h${count}`;
-          content = content.substr(count);
-          count = 5;
-        }
-      }
-      return `<${tag}>${content}</${tag}>`;
-    }
-  },
-  variable: {
-    match: (content) =>
-      content.charAt(0) === '$' && content.slice(-1) === ';',
-    format: (content) => {
-      content = content.split(':');
-      const val = content.pop().slice(0, -1).trim();
-      DOC_VARS.push({
-        name: content[0],
-        val: val
-      });
-      return `<pre class="var-pre code"><span class="var-name">${content[0]}</span>:<span class="var-val">${val}</span></pre>`;
-    }
-  },
-  idea: {
-    match: (content) =>
-      content.substr(0, 2) === '? ',
-    format: content => {
-      content = content.slice(2);
-      return `<div class="idea"><span class="star">★</span> ${content}</div>`;
-    }
-  },
-  checkbox: {
-    match: (content) =>
-      content.substr(0, 3) === '[ ]' || content.substr(0, 3) === '[x]',
-    format: (content) => {
-      const id = randomString(4);
-      const checked = content.charAt(1) === 'x' ? 'checked' : '';
-      content = content.slice(3);
-      return `
-        <input id="${id}" type="checkbox" ${checked}/>
-        <label for="${id}">${content}</label>`;
-    }
-  },
-  math: {
-    match: (content) =>
-      /^[^a-z]*$/i.test(content) && !types.sparkline.match(content),
-    format: (content) => {
-      return `<pre class='code'><span class="comment">${content}</span> <br>${eval(content)}</pre>`;
-    }
-  },
-  hexcode: {
-    match: (content) =>
-      /^#[0-9A-F]{6}$/i.test(content),
-    format: (content) => {
-      return `<div class="color"><div class="color-swatch" style="background-color: ${content}"></div>${content}</div>`;
-    }
-  },
   sparkline: {
-    match: (content) =>
-      content.charAt(0) === '~' && content.slice(-1) === '~',
-    format: (content) => {
-      content = content.slice(1, -1);
+    regex: /\~(.*?)\~/,
+    wrap: (res) => {
       const d = ['M 0 0'];
-      const data = content.split(',');
+      const data = res.split(',');
       const width = 400;
       const height = 100;
       for(var i = 0; i < data.length; i++) {
@@ -221,20 +142,74 @@ const types = {
         </svg>`;
     }
   },
-  image: {
-    match: (content) =>
-      content.match(/]([\s]*)\(/g, '\\]$1\\('),
-    format: (content) => {
-      return content;
+  math: {
+    regex: /^\[^\-\-\-](?:(?![~]))[^a-z]*$/i,
+    wrap: (res) => {
+      return `<pre class='code'><span class="comment">${res}</span> <br>${eval(res)}</pre>`;
+    }
+  },
+  variable: {
+    regex: /\$(.*?)\=(.*?)\;/,
+    wrap: (res, additional) => {
+      DOC_VARS.push({
+        name: '$'+res.trim(),
+        val: additional.trim()
+      });
+      return `<pre class="var-pre code"><span class="var-name">$${res.trim()}</span>:<span class="var-val"> ${additional.trim()}</span></pre>`;
+    }
+  },
+  preformatted: {
+    regex: /`{3}([\S\s]*?)`{3}/m,
+    wrap: (res) => {
+      const lang = detectLang(res);
+      const id = randomString(12);
+      Rainbow.color(res, lang, (highlightedCode) => {
+        const el = document.querySelector(`[data-async-id="${id}"]`);
+        el.setAttribute('data-language', lang);
+        el.innerHTML = highlightedCode;
+      });
+      return `<pre data-async-id="${id}">${res}</pre>`;
+    }
+  },
+  important: {
+    regex: /^\? ([\s\S]*$)/,
+    wrap: res => {
+      return `<div class="idea"><span class="star">★</span> ${res}</div>`;
+    }
+  },
+  quote: {
+    regex: /^\> ([\s\S]*$)/,
+    wrap: res =>
+      res
+  },
+  list: {
+    regex: /^\* ([\s\S]*$)/,
+    wrap: res =>
+      res
+  },
+  checkbox: {
+    regex: /^\[ ]([\s\S]*$)/,
+    wrap: (res) => {
+      const id = randomString(4);
+      return `
+        <input id="${id}" type="checkbox"/>
+        <label for="${id}">${res}</label>`;
+    }
+  },
+  header: {
+    regex: /(#+\s)([\s\S]*$)/i,
+    wrap: (res, additional) => {
+      let count = res.length;
+      tag = `h${count - 1}`;
+      return `<${tag}>${additional.trim()}</${tag}>`;
     }
   },
   url: {
-    match: (content) =>
-      content.match(URL_REGEX) && content.charAt(0) === '[' && content.slice(-1) === ']',
-    format: (content) => {
+    regex: URL_REGEX,
+    wrap: (res) => {
+      res = 'h'+res;
       const id = randomString(12);
-      content = content.slice(1, -1);
-      getThumbnail(content, (src, url) => {
+      getThumbnail(res, (src, url) => {
         let result;
         const message = document.querySelector(`[data-async-id="${id}"]`);
         if(url) {
@@ -249,9 +224,9 @@ const types = {
         }
         else {
           const fillin = () => {
-            content = content.includes('http') ? content : `http://${content}`;
-            message.querySelector('a').setAttribute('href', content);
-            message.querySelector('p').innerText = content;
+            res = res.includes('http') ? res : `http://${res}`;
+            message.querySelector('a').setAttribute('href', res);
+            message.querySelector('p').innerText = res;
           };
           fillin();
         }
@@ -263,7 +238,7 @@ const types = {
           <div class="m-c">
             <a target="_blank">
               <img src="">
-              <p>${content}</p>
+              <p>${res}</p>
             </a>
           </div>
         </div>`;
@@ -271,106 +246,84 @@ const types = {
   }
 };
 
-const inlineStyles = {
-  api: {
-    input: ['@', '@'],
-    output: ['', ''],
-    process: (api, callback) => {
-      fetch(`${api}`).then(function(response) {
-        return response.json();
-      }).then(function(resp) {
-        return callback(resp);
-      }).catch(error => {
-        callback(false);
-      });
-    }
-  },
+const inlines = {
   bold: {
-    input: ['*', '*'],
-    output: ['<b>', '</b>']
+    regex: /\*(.*?)\*/,
+    wrap: (res) =>
+      `<b>${res}</b>`,
   },
   emoji: {
-    input: [':', ':'],
-    output: ['', ''],
-    process: (content) => {
-      return emojis[content] || content;
-    }
+    regex: /\:(.*?)\:/,
+    wrap: (res) =>
+      emojis[res] || res,
   },
   italic: {
-    input: ['_', '_'],
-    output: ['<i>', '</i>']
+    regex: /\_(.*?)\_/,
+    wrap: (res) =>
+      `<i>${res}</i>`,
   },
   code: {
-    input: ['`', '`'],
-    output: ['<pre class="inline-code">', '</pre>']
-  }
-};
-
-const getInlineStyle = (content, expression) => {
-  const inputOpen = expression.input[0];
-  const inputClose = expression.input[1];
-  const outputOpen = expression.output[0];
-  const outputClose = expression.output[1];
-  const openPos = content.indexOf(inputOpen);
-  let closePos = content.indexOf(inputClose);
-  if(openPos === closePos) {
-    let trimmed = content.substring(openPos + 1);
-    closePos = trimmed.indexOf(inputClose) + openPos;
-    if(openPos === closePos) {
-      return false;
+    regex: /`(.*?)`/,
+    wrap: (res) =>
+      `<pre class="inline-code">${res}</pre>`,
+  },
+  hexcode: {
+    regex: /#(?:[0-9a-f]{3}){1,2}/i,
+    wrap: (res) =>
+      `<div class="inline-hexcode">
+        <div class="hexcode-wrap"><div class="color-swatch" style="background-color: ${res}"></div>${res}</div>
+      </div>`
+  },
+  api: {
+    regex: /\@\[([^\[]+)\]\(([^\)]+)\)/,
+    /* jshint ignore:start */
+    wrap: async (res, additional) => {
+      const id = randomString(12);
+      const resp = await fetch(`${res}`);
+      let json = await resp.json();
+      const path = additional.split('.');
+      const result = path.map(p => {
+        json = json[p];
+        return json;
+      })[0];
+      return result;
     }
-  }
-  if(openPos > -1 && closePos > -1 && openPos < closePos) {
-    return {
-      open: openPos,
-      close: closePos,
-      inputOpen: inputOpen,
-      inputClose: inputOpen,
-      outputOpen: outputOpen,
-      outputClose: outputClose,
-      process: expression.process || false
-    };
-  }
-  else {
-    return false;
-  }
+    /* jshint ignore:end */
+  },
+  link: {
+    regex: /\[([^\[]+)\]\(([^\)]+)\)/,
+    wrap: (res, additional) =>
+      `<a href="${additional}">${res}</a>`
+  },
 };
 
-const wrap = (content, params) => {
-  let result = content.slice(params.open + 1, params.close + 1);
-  if(params.inputOpen[0] === '@') {
-    let resP = new Promise(resolve => {
-      params.process(result, (res) => {
-        const path = content.substr(params.close + 3).split("/")[0];
-        let find = `${params.inputOpen}${result}${params.inputClose}`;
-        if(path !== '') {
-          const pathNav = path.split(".");
-          pathNav.map(p => {
-            res = res[p];
-            return res;
-          });
-          content = content.replace(`.${path}/`, '');
-        }
-        const replace = `${params.outputOpen}${res}${params.outputClose}`;
-        content = content.replace(find, replace);
-        resolve(content);
+/* jshint ignore:start */
+const wrap = async (content, format) => {
+  let styled = content;
+  const matches = [];
+  for(let style in format) {
+    const regex = format[style].regex;
+    content.replace(regex, (match) => {
+      matches.push({
+        stripped: regex.exec(match)[1],
+        unstripped: regex.exec(match)[0],
+        additional: regex.exec(match)[2] || undefined,
+        style: style
       });
     });
-    return resP;
   }
-  if(params.inputOpen[0] === ':') {
-    return content.replace(`:${result}:`, params.process(result));
-  }
-  else {
-    content = content.replace(`${params.inputOpen}${result}${params.inputClose}`, `${params.outputOpen}${result}${params.outputClose}`);
-    return content;
-  }
-  return false;
+  await asyncForEach(matches, async match => {
+    const style = format[match.style];
+    const output = await style.wrap(match.stripped || match.unstripped, match.additional);
+    styled = styled.replace(match.unstripped, output);
+  });
+  return styled;
 };
+/* jshint ignore:end */
 
 const getType = (content) => {
-  for(let type in types) {
-    if(types[type].match(content)) {
+  for(let type in blocks) {
+    if(blocks[type].regex.test(content)) {
       return type;
     }
   }
@@ -387,24 +340,20 @@ const fillInVars = (content) => {
 /* jshint ignore:start */
 const message = async (content) => {
   let failsafe = 0;
-  const isVar = types.variable.match(content);
+  const isVar = blocks.variable.regex.test(content);
   content = DOC_VARS.length > 0 && !isVar ? fillInVars(content) : content;
   let type = getType(content);
-  if(type !== 'math') {
-    for(let style in inlineStyles) {
-      let inlineStyle = getInlineStyle(content, inlineStyles[style]);
-      while(inlineStyle && failsafe < 100) {
-        content = await wrap(content, inlineStyle);
-        inlineStyle = getInlineStyle(content, inlineStyles[style]);
-        failsafe++;
-      }
-    }
+  console.log(type)
+  if(type !== 'preformatted' && type !== 'math' && type !== 'sparkline' && type !== 'url') {
+    content = await wrap(content, inlines);
   }
-  if(type) {
-    const result = await types[type].format(content);
-    return type === 'url' ? result : `<div class="message ${type}"><div class="handle">▶</div><div class="m-c">${result}</div></div>`;
+  content = await wrap(content, blocks);
+  if(type !== 'url') {
+    return `<div class="message ${type ? type : 'text'}"><div class="handle">▶</div><div class="m-c">${content}</div></div>`;
   }
-  return `<div class="message text"><div class="handle">▶</div><div class="m-c">${content}</div></div>`;
+  else{
+    return content;
+  }
 };
 
 const enterMessage = async () => {
@@ -420,7 +369,7 @@ const enterMessage = async () => {
 const recordEntry = (content, type, id) => {
   const editing = selectedMessageIndex >= 0 && document.querySelector('.message-selected');
 
-  localforage.getItem('notes').then(function(notes) {
+  localforage.getItem('notes').then(notes => {
     if(!notes) {
       const note = {
         exerpt: CONTENT.querySelector('.message:first-child .m-c *:first-child').innerText,
@@ -567,7 +516,7 @@ const renderMessage = async (result, type, id) => {
     CONTENT.insertBefore(element, sibling);
   }
   else if(injectLine) {
-    let before = $(injectLine);
+    let before = $('#'+injectLine);
     document.querySelector('.inject-line').remove();
     CONTENT.insertBefore(element, before);
   }
@@ -960,14 +909,26 @@ const bindUIEvents = () => {
     }
   };
 
-  $('#themeLight').onclick = () => {
-    document.body.classList = 'light-theme';
-  };
-
-  $('#themeDark').onclick = () => {
-    document.body.classList = 'dark-theme';
-  };
+  $('#themeLight').onclick = setLightTheme;
+  $('#themeDark').onclick = setDarkTheme;
 };
 
-loadNotes();
-bindUIEvents();
+const init = () => {
+  localforage.getItem('theme').then(theme => {
+    if(!theme) {
+      setDarkTheme();
+    }
+    else {
+      if(theme !== 'dark-theme') {
+        setLightTheme();
+      }
+      else {
+        setDarkTheme();
+      }
+    }
+  });
+  loadNotes();
+  bindUIEvents();
+};
+
+init();

@@ -186,6 +186,9 @@ input[type=number]::-webkit-outer-spin-button {
     height: 35px;
     width: inherit;
     line-height: 35px;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     overflow: hidden;
     font-weight: normal;
     text-align: center;

@@ -256,6 +256,9 @@ input[type=number]::-webkit-outer-spin-button {
     height: 35px;
     width: inherit;
     line-height: 35px;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     overflow: hidden;
     font-weight: normal;
     text-align: center;
@@ -608,7 +611,7 @@ body {
 
 .rail {
   min-width: 250px;
-  padding: 2rem;
+  padding: 1rem 2rem 2rem 2rem;
   font-size: 0.85rem;
   color: var(--subtle-text-color); }
   .rail li {
@@ -627,13 +630,11 @@ body {
     margin-top: 1rem; }
     .message.text .m-c, .message.quote .m-c {
       white-space: pre-line; }
-  .message.header {
-    margin-top: 1rem; }
   .message.math pre {
     color: var(--text-math); }
-  .message.code, .message.math {
+  .message.preformatted, .message.math {
     margin: 1rem 0 0 0; }
-    .message.code .m-c, .message.math .m-c {
+    .message.preformatted .m-c, .message.math .m-c {
       width: 100%;
       padding: 1rem;
       font-family: "Roboto Mono";
@@ -644,7 +645,6 @@ body {
   .message.sparkline {
     margin-top: 1rem; }
     .message.sparkline .m-c {
-      width: 100%;
       padding: 1rem;
       background-color: var(--hover-color);
       border: 1px solid var(--select-color); }
@@ -652,21 +652,23 @@ body {
       transform: rotateX(180deg); }
       .message.sparkline svg path {
         stroke: var(--var-color); }
-  .message.hexcode {
-    margin-top: 1rem; }
-    .message.hexcode .color {
-      display: flex;
-      font-family: "Roboto Mono";
-      font-size: 0.85rem;
-      color: var(--subtle-text-color);
-      align-items: center;
-      justify-content: flex-start;
-      text-transform: uppercase; }
-      .message.hexcode .color .color-swatch {
-        width: 15px;
-        height: 15px;
-        margin-right: 0.5rem;
-        border-radius: 2px; }
+  .message .inline-hexcode {
+    display: -webkit-inline-box; }
+  .message .hexcode-wrap {
+    display: flex;
+    font-family: "Roboto Mono";
+    font-size: 0.85rem;
+    color: var(--subtle-text-color);
+    align-items: center;
+    justify-content: flex-start;
+    text-transform: uppercase;
+    padding: 0.1rem 0.4rem;
+    background-color: var(--select-color); }
+    .message .hexcode-wrap .color-swatch {
+      width: 15px;
+      height: 15px;
+      margin-right: 0.2rem;
+      border-radius: 2px; }
   .message.variable {
     margin: 1rem 0 0 0; }
     .message.variable + .message.variable {
@@ -681,12 +683,12 @@ body {
       color: var(--text-color); }
   .message.checkbox {
     margin-top: 1rem; }
-  .message.idea {
+  .message.important {
     margin: 1rem 0; }
-    .message.idea .m-c {
+    .message.important .m-c {
       max-width: calc(100% - 2rem);
       padding-left: 1.5rem; }
-    .message.idea .star {
+    .message.important .star {
       position: absolute;
       color: #f9ac00;
       margin-right: 1rem;
@@ -694,7 +696,7 @@ body {
       vertical-align: bottom; }
   .message.quote {
     color: var(--subtle-text-color);
-    margin: 2rem 0 2rem 0rem; }
+    margin: 1rem 0 1rem 0rem; }
     .message.quote .m-c {
       padding-left: 1rem;
       max-width: calc(100% - 2rem);
@@ -733,15 +735,19 @@ body {
       .message.url .m-c img[src=""] {
         display: none; }
       .message.url .m-c p {
-        padding: 0 1rem 1rem 1rem;
+        padding: 0rem 1rem 1rem 1rem;
         max-width: 320px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis; }
       .message.url .m-c a {
+        display: flex;
+        padding: 0.5rem;
         color: var(--subtle-text-color);
-        text-decoration: none;
-        display: block; }
+        text-decoration: none; }
+      .message.url .m-c img {
+        width: 180px;
+        height: 100px; }
   .message:hover {
     background-color: var(--hover-color); }
     .message:hover .handle {
