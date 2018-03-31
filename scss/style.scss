@@ -8,9 +8,10 @@
 
 * {box-sizing: border-box;}
 
-@import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
+// @import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono');
 
-$mono: 'Roboto Mono';
+$mono: 'IBM Plex Mono', monospace;;
 
 html,
 body {
@@ -108,7 +109,7 @@ body {
   ul {
 
     li {
-      padding: 0.85rem 1rem;
+      padding: 0.5rem 1rem;
       font-size: 0.85rem;
       cursor: pointer;
       @include flex-row;
@@ -125,11 +126,12 @@ body {
     }
 
     li.selected {
-      background-color: var(--border-color);
+      // background-color: var(--border-color);
     }
 
     li.selected span {
       color: var(--text-color);
+      font-weight: bold;
     }
   }
 }
@@ -459,6 +461,7 @@ body {
   }
 
   &.url {
+    float: left;
     margin: 1rem 0;
 
     .m-c {
@@ -470,21 +473,21 @@ body {
       }
 
       p {
-        padding: 0rem 1rem 1rem 1rem;
-        max-width: 320px;
+        padding: 0.5rem 1rem 1rem 1rem;
+        max-width: 250px;
+        font-size: 0.85rem;
+        margin-top: 0;
         @include truncate;
       }
 
       a {
-        display: flex;
-        padding: 0.5rem;
         color: var(--subtle-text-color);
         text-decoration: none;
       }
 
       img {
-        width: 180px;
-        height: 100px;
+        width: 250px;
+        height: 140px;
       }
     }
   }
@@ -569,8 +572,8 @@ h1,h2,h3,h4 {
 }
 
 .dummy-link-loader {
-  width: 320px;
-  height: 239px;
+  width: 250px;
+  height: 140px;
   margin-left: 2rem !important;
   @include borderanimate;
 }
@@ -582,8 +585,7 @@ h1,h2,h3,h4 {
 .inject-line {
   height: 2px;
   width: 100%;
-  background-image: linear-gradient(to right, transparent, var(--text-math), transparent);
-  background-size: 200%;
+  background-color: var(--text-math);
   animation: borders 0.5s linear infinite -0.75s;
 
   & + > * {
@@ -592,10 +594,13 @@ h1,h2,h3,h4 {
 
   @keyframes borders {
     0% {
-      background-position: -100% 50%;
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.25;
     }
     100% {
-      background-position: 100% 50%;
+      opacity: 1;
     }
   }
 }

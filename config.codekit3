@@ -182,6 +182,16 @@
 		"sC": 3,
 		"tS": 0
 		},
+	"\/scripts\/libs\/mathjs.js": {
+		"ft": 64,
+		"ma": 0,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "\/scripts\/libs\/mathjs-min.js",
+		"oF": 0,
+		"sC": 3,
+		"tS": 0
+		},
 	"\/scripts\/libs\/rainbow-custom.min.js": {
 		"ft": 64,
 		"ma": 0,

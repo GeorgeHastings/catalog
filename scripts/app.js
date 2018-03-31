@@ -125,7 +125,7 @@ const blocks = {
       `<hr>`
   },
   sparkline: {
-    regex: /\~(.*?)\~/,
+    regex: /\~\[(.*?)\]\~/,
     wrap: (res) => {
       const d = ['M 0 0'];
       const data = res.split(',');
@@ -142,12 +142,6 @@ const blocks = {
         </svg>`;
     }
   },
-  math: {
-    regex: /^\[^\-\-\-](?:(?![~]))[^a-z]*$/i,
-    wrap: (res) => {
-      return `<pre class='code'><span class="comment">${res}</span> <br>${eval(res)}</pre>`;
-    }
-  },
   variable: {
     regex: /\$(.*?)\=(.*?)\;/,
     wrap: (res, additional) => {
@@ -155,7 +149,7 @@ const blocks = {
         name: '$'+res.trim(),
         val: additional.trim()
       });
-      return `<pre class="var-pre code"><span class="var-name">$${res.trim()}</span>:<span class="var-val"> ${additional.trim()}</span></pre>`;
+      return `<pre class="var-pre code"><span class="var-name">$${res.trim()}</span> =<span class="var-val"> ${additional.trim()}</span></pre>`;
     }
   },
   preformatted: {
@@ -188,9 +182,9 @@ const blocks = {
       res
   },
   checkbox: {
-    regex: /^\[ ]([\s\S]*$)/,
+    regex: /^\[ ]|\[x]([\s\S]*$)/,
     wrap: (res) => {
-      const id = randomString(4);
+      const id = randomString(10);
       return `
         <input id="${id}" type="checkbox"/>
         <label for="${id}">${res}</label>`;
@@ -202,6 +196,12 @@ const blocks = {
       let count = res.length;
       tag = `h${count - 1}`;
       return `<${tag}>${additional.trim()}</${tag}>`;
+    }
+  },
+  math: {
+    regex: /\{(.*?)\}/,
+    wrap: (res) => {
+      return `<pre class='code'><span class="comment">${res}</span> <br>${math.eval(res)}</pre>`;
     }
   },
   url: {
@@ -302,12 +302,14 @@ const wrap = async (content, format) => {
   let styled = content;
   const matches = [];
   for(let style in format) {
-    const regex = format[style].regex;
-    content.replace(regex, (match) => {
+    const inlines = format.bold;
+    const regex = inlines ? new RegExp(format[style].regex, 'g') : format[style].regex;
+    content.replace(regex, match => {
+      const exec = format[style].regex.exec(match);
       matches.push({
-        stripped: regex.exec(match)[1],
-        unstripped: regex.exec(match)[0],
-        additional: regex.exec(match)[2] || undefined,
+        stripped: exec[1],
+        unstripped: exec[0],
+        additional: exec[2] || undefined,
         style: style
       });
     });
@@ -343,11 +345,10 @@ const message = async (content) => {
   const isVar = blocks.variable.regex.test(content);
   content = DOC_VARS.length > 0 && !isVar ? fillInVars(content) : content;
   let type = getType(content);
-  console.log(type)
+  content = await wrap(content, blocks);
   if(type !== 'preformatted' && type !== 'math' && type !== 'sparkline' && type !== 'url') {
     content = await wrap(content, inlines);
   }
-  content = await wrap(content, blocks);
   if(type !== 'url') {
     return `<div class="message ${type ? type : 'text'}"><div class="handle">▶</div><div class="m-c">${content}</div></div>`;
   }
