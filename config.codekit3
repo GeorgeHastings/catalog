@@ -7,7 +7,7 @@
 		"uuidString": "2FB87862-5C79-467D-BBD7-FB2F4038021A"
 		}
 	],
-"creatorBuild": "26330",
+"creatorBuild": "26680",
 "files": {
 	"\/.jshintrc": {
 		"cB": 0,
@@ -178,6 +178,16 @@
 		"mi": 1,
 		"oA": 0,
 		"oAP": "\/scripts\/libs\/localforage.min-min.js",
+		"oF": 0,
+		"sC": 3,
+		"tS": 0
+		},
+	"\/scripts\/libs\/mathjs-min.js": {
+		"ft": 64,
+		"ma": 0,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "\/scripts\/libs\/mathjs-min-min.js",
 		"oF": 0,
 		"sC": 3,
 		"tS": 0
@@ -368,7 +378,8 @@
 	"creationDate": 540084131,
 	"displayValue": "mbrain",
 	"displayValueWasSetByUser": 0,
-	"iconImageName": "meme-angryPicard"
+	"iconImageName": "meme-angryPicard",
+	"iconImageWasSetByUser": 0
 	},
 "projectSettings": {
 	"abortBuildOnError": 1,
@@ -2171,6 +2182,7 @@
 		"autoOutputPathReplace1": "",
 		"autoOutputPathReplace2": "",
 		"autoOutputPathStyle": 0,
+		"outputFormat": 0,
 		"quality": 100
 		},
 	"languageDefaultsJS": {

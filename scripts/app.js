@@ -268,7 +268,7 @@ const inlines = {
       `<pre class="inline-code">${res}</pre>`,
   },
   hexcode: {
-    regex: /#(?:[0-9a-f]{3}){1,2}/i,
+    regex: /#(?:[0-9a-fA-F]{3}){1,2}/i,
     wrap: (res) =>
       `<div class="inline-hexcode">
         <div class="hexcode-wrap"><div class="color-swatch" style="background-color: ${res}"></div>${res}</div>

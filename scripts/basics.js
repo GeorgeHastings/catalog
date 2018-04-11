@@ -8,7 +8,7 @@ const basics = {
     },
     {
       "id": "t4odx4yxpc00",
-      "content": "Catalog is a minimal markdown note app with a few extra features. ",
+      "content": "Catalog is a minimal markdown note app with a few bells and whistles. ",
       "type": "none"
     },
     {
@@ -33,7 +33,7 @@ const basics = {
     },
     {
       "id": "ya4m55zvsg00",
-      "content": "Catalog has a limited set of inline style such as `code`, *bold*, and _italic_",
+      "content": "Catalog has a limited set of inline style such as `code`, *bold*, _italic_, #2dc5a3, and [links](http://www.georgehastings.com).",
       "type": "none"
     },
     {
@@ -52,21 +52,6 @@ const basics = {
       "type": "code"
     },
     {
-      "id": "9fdmpt3rc000",
-      "content": "### Links",
-      "type": "header"
-    },
-    {
-      "id": "esvrjaytk000",
-      "content": "Pull in thumbnail previews for visual bookmarking",
-      "type": "none"
-    },
-    {
-      "id": "0tmxco5zg000",
-      "content": "[www.area17.com]",
-      "type": "url"
-    },
-    {
       "id": "loknwusv5c00",
       "content": "### Variables",
       "type": "header"
@@ -78,7 +63,7 @@ const basics = {
     },
     {
       "id": "os7o18jq6800",
-      "content": "$favoriteColor: green;",
+      "content": "$favoriteColor = green;",
       "type": "variable"
     },
     {
@@ -113,7 +98,12 @@ const basics = {
     },
     {
       "id": "fsg4aavokg00",
-      "content": "32.4 * 67 / (400.01 * (2.5/9))",
+      "content": "{32.4 * 67 / (400.01 * (2.5/9))}",
+      "type": "math"
+    },
+    {
+      "id": "fsg4aavodf12",
+      "content": "{sin(34) * pi}",
       "type": "math"
     },
     {
@@ -128,17 +118,17 @@ const basics = {
     },
     {
       "id": "y8hqqqi6r400",
-      "content": "$ethOwned: 35.6;",
+      "content": "$ethOwned = 35.6;",
       "type": "variable"
     },
     {
       "id": "2lzc5xp89s00",
-      "content": "$ethPrice: @https://api.gdax.com/products/ETH-USD/ticker@.price/;",
+      "content": "$ethPrice = @[https://api.gdax.com/products/ETH-USD/ticker](price);",
       "type": "variable"
     },
     {
       "id": "w2uh7s380000",
-      "content": "($ethPrice * $ethOwned)",
+      "content": "{$ethPrice * $ethOwned}",
       "type": "none"
     }
   ]
