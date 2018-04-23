@@ -119,6 +119,19 @@ const createElement = (markup) =>
   document.createRange().createContextualFragment(markup);
 
 const blocks = {
+  preformatted: {
+    regex: /`{3}([\S\s]*?)`{3}/m,
+    wrap: (res) => {
+      const lang = detectLang(res);
+      const id = randomString(12);
+      Rainbow.color(res, lang, (highlightedCode) => {
+        const el = document.querySelector(`[data-async-id="${id}"]`);
+        el.setAttribute('data-language', lang);
+        el.innerHTML = highlightedCode;
+      });
+      return `<pre data-async-id="${id}">${res}</pre>`;
+    }
+  },
   rule: {
     regex: /^\---/,
     wrap: () =>
@@ -150,19 +163,6 @@ const blocks = {
         val: additional.trim()
       });
       return `<pre class="var-pre code"><span class="var-name">$${res.trim()}</span> =<span class="var-val"> ${additional.trim()}</span></pre>`;
-    }
-  },
-  preformatted: {
-    regex: /`{3}([\S\s]*?)`{3}/m,
-    wrap: (res) => {
-      const lang = detectLang(res);
-      const id = randomString(12);
-      Rainbow.color(res, lang, (highlightedCode) => {
-        const el = document.querySelector(`[data-async-id="${id}"]`);
-        el.setAttribute('data-language', lang);
-        el.innerHTML = highlightedCode;
-      });
-      return `<pre data-async-id="${id}">${res}</pre>`;
     }
   },
   // important: {
