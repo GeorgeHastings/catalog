@@ -165,12 +165,12 @@ const blocks = {
       return `<pre data-async-id="${id}">${res}</pre>`;
     }
   },
-  important: {
-    regex: /^\? ([\s\S]*$)/,
-    wrap: res => {
-      return `<div class="idea"><span class="star">★</span> ${res}</div>`;
-    }
-  },
+  // important: {
+  //   regex: /^\? ([\s\S]*$)/,
+  //   wrap: res => {
+  //     return `<div class="idea"><span class="star">★</span> ${res}</div>`;
+  //   }
+  // },
   quote: {
     regex: /^\> ([\s\S]*$)/,
     wrap: res =>
@@ -181,8 +181,17 @@ const blocks = {
     wrap: res =>
       res
   },
-  checkbox: {
-    regex: /^\[ ]|\[x]([\s\S]*$)/,
+  checkboxUnchecked: {
+    regex: /^\[x]([\s\S]*$)/,
+    wrap: (res) => {
+      const id = randomString(10);
+      return `
+        <input id="${id}" type="checkbox" checked />
+        <label for="${id}">${res}</label>`;
+    }
+  },
+  checkboxChecked: {
+    regex: /^\[\s]([\s\S]*$)/,
     wrap: (res) => {
       const id = randomString(10);
       return `

@@ -32,33 +32,33 @@ body {
 }
 
 .dark-theme {
-  --bg-color: $black;
-  --border-color: $slate;
+  --bg-color: #171727;
+  --border-color: #282f4e;
   --text-color: white;
-  --subtle-text-color: $darkgray;
-  --backdrop-color: lighten($slate, 5%);
-  --focus-color: lighten($slate, 10%);
-  --select-color: lighten($black, 5%);
-  --hover-color: lighten($black, 2%);
-  --radio-color: $darkgray;
+  --subtle-text-color: #8192b9;
+  --backdrop-color: lighten(#282f4e, 5%);
+  --focus-color: lighten(#282f4e, 10%);
+  --select-color: lighten(#171727, 5%);
+  --hover-color: lighten(#171727, 2%);
+  --radio-color: #8192b9;
   --var-color: cyan;
   --text-math: cyan;
-  --ic-color: $slate;
+  --ic-color: #282f4e;
 }
 
 .light-theme {
   --bg-color: white;
-  --border-color: $lightgray;
-  --text-color: $black;
-  --subtle-text-color: $darkgray;
-  --backdrop-color: $gray;
-  --focus-color: darken($lightgray, 10%);
-  --select-color: lighten($lightgray, 1.5%);
-  --hover-color: lighten($lightgray, 3%);
-  --radio-color: $gray;
-  --var-color: $blue;
-  --text-math: $blue;
-  --ic-color: lighten($lightblue, 2%);
+  --border-color: #EFF4F8;
+  --text-color: #171727;
+  --subtle-text-color: #8192b9;
+  --backdrop-color: #bcc6d1;
+  --focus-color: darken(#EFF4F8, 10%);
+  --select-color: lighten(#EFF4F8, 1.5%);
+  --hover-color: lighten(#EFF4F8, 3%);
+  --radio-color: #bcc6d1;
+  --var-color: #4579FF;
+  --text-math: #4579FF;
+  --ic-color: lighten(#E5ECFF, 2%);
 }
 
 .wrapper,
@@ -158,10 +158,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 70px;
+  height: 50px;
   margin: 0rem 4rem 0rem 4rem;
   color: var(--subtle-text-color);
-  font-size: 0.7rem;
+  // font-size: 0.7rem;
 }
 
 .note-controls {
@@ -263,7 +263,7 @@ body {
 .rail {
   min-width: 250px;
   // border-left: 1px solid var(--border-color);
-  padding: 1rem 2rem 2rem 2rem;
+  padding: 0.5rem 2rem 2rem 2rem;
   font-size: 0.85rem;
   color: var(--subtle-text-color);
 
@@ -301,12 +301,21 @@ body {
     // }
   }
 
-  &.math pre {
-    color: var(--text-math);
+  &.math  {
+    margin: 1rem 0 0 0;
+
+    pre {
+      color: var(--text-math);
+    }
+
+    .m-c {
+      overflow-x: scroll;
+      width: 100%;
+      padding: 1rem 0;
+    }
   }
 
-  &.preformatted,
-  &.math {
+  &.preformatted {
     margin: 1rem 0 0 0;
 
     .m-c {
@@ -382,7 +391,8 @@ body {
     }
   }
 
-  &.checkbox {
+  &.checkboxChecked,
+  &.checkboxUnchecked {
     margin-top: 1rem;
   }
 
@@ -425,7 +435,6 @@ body {
       &:before {
         position: absolute;
         content: "*";
-        // top: 0.75rem;
         line-height: 150%;
         vertical-align: bottom;
         font-size: 1.5rem;
