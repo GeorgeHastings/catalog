@@ -704,9 +704,10 @@ body {
     .message.math pre {
       color: var(--text-math); }
     .message.math .m-c {
-      overflow-x: scroll;
+      font-family: "IBM Plex Mono", monospace;
       width: 100%;
-      padding: 1rem 0; }
+      padding: 1rem 0;
+      overflow-x: scroll; }
   .message.preformatted {
     margin: 1rem 0 0 0; }
     .message.preformatted .m-c {
@@ -962,16 +963,17 @@ h1:focus, h2:focus, h3:focus, h4:focus {
 .inject-line {
   height: 2px;
   width: 100%;
-  background-color: var(--text-math);
-  -webkit-animation: borders 0.5s linear infinite -0.75s;
-          animation: borders 0.5s linear infinite -0.75s; }
+  background: -webkit-gradient(linear, left top, right top, from(transparent), color-stop(50%, transparent), color-stop(50%, var(--text-math)), to(var(--text-math)));
+  background: linear-gradient(to right, transparent, transparent 50%, var(--text-math) 50%, var(--text-math) 100%);
+  background-repeat: repeat;
+  background-size: 15px 2px;
+  -webkit-animation: borders 0.3s linear infinite -0.75s;
+          animation: borders 0.3s linear infinite -0.75s; }
   .inject-line + > * {
     margin-top: 0; }
 
 @keyframes borders {
   0% {
-    opacity: 1; }
-  50% {
-    opacity: 0.25; }
+    background-position: 15px 0px; }
   100% {
-    opacity: 1; } }
+    background-position: 0px 0px; } }

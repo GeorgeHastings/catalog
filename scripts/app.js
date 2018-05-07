@@ -165,12 +165,6 @@ const blocks = {
       return `<pre class="var-pre code"><span class="var-name">$${res.trim()}</span> =<span class="var-val"> ${additional.trim()}</span></pre>`;
     }
   },
-  // important: {
-  //   regex: /^\? ([\s\S]*$)/,
-  //   wrap: res => {
-  //     return `<div class="idea"><span class="star">★</span> ${res}</div>`;
-  //   }
-  // },
   quote: {
     regex: /^\> ([\s\S]*$)/,
     wrap: res =>
@@ -306,15 +300,21 @@ const inlines = {
   },
 };
 
+
+
 /* jshint ignore:start */
-const wrap = async (content, format) => {
+const wrap = async (content, format, exclusive) => {
   let styled = content;
-  const matches = [];
-  for(let style in format) {
+  const allMatches = [];
+  const getMatches = style => {
+    const matches = [];
     const inlines = format.bold;
     const regex = inlines ? new RegExp(format[style].regex, 'g') : format[style].regex;
     content.replace(regex, match => {
       const exec = format[style].regex.exec(match);
+      if(exclusive) {
+        console.log(match)
+      }
       matches.push({
         stripped: exec[1],
         unstripped: exec[0],
@@ -322,8 +322,25 @@ const wrap = async (content, format) => {
         style: style
       });
     });
+    return matches;
   }
-  await asyncForEach(matches, async match => {
+  if(exclusive) {
+    Object.keys(format).some(style => {
+      const matches = getMatches(style);
+      if(matches.length > 0) {
+        allMatches.push(...getMatches(style));
+        return true;
+      }
+      return false;
+    });
+  }
+  else {
+    Object.keys(format).some(style => {
+      allMatches.push(...getMatches(style));
+    });
+  }
+
+  await asyncForEach(allMatches, async match => {
     const style = format[match.style];
     const output = await style.wrap(match.stripped || match.unstripped, match.additional);
     styled = styled.replace(match.unstripped, output);
@@ -354,7 +371,7 @@ const message = async (content) => {
   const isVar = blocks.variable.regex.test(content);
   content = DOC_VARS.length > 0 && !isVar ? fillInVars(content) : content;
   let type = getType(content);
-  content = await wrap(content, blocks);
+  content = await wrap(content, blocks, true);
   if(type !== 'preformatted' && type !== 'math' && type !== 'sparkline' && type !== 'url') {
     content = await wrap(content, inlines);
   }
@@ -871,7 +888,7 @@ const bindUIEvents = () => {
                 val = v.val;
                 return;
               }
-            })
+            });
             return `<span class="target">${match}</span> ${val}`;
           }
         });
