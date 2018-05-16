@@ -470,16 +470,14 @@ body {
   background-color: var(--bg-color); }
 
 .dark-theme {
-  --snippet-bg-color: #03011B;
-  --bg-color: #13112F;
-  --border-color: #282f4e;
+  --bg-color: #03011B;
+  --hover-color: #13112F;
+  --border-color: #1E1F3B;
   --text-color: white;
   --subtle-text-color: #8994B1;
   --backdrop-color: #393D55;
   --focus-color: #505670;
   --select-color: #282943;
-  --message-hover-color: #2A2840;
-  --hover-color: #1E1F3B;
   --radio-color: #8994B1;
   --var-color: #2AEAFF;
   --text-math: #2AEAFF;
@@ -833,7 +831,7 @@ body {
         width: 250px;
         height: 140px; }
   .message:hover {
-    background-color: var(--message-hover-color); }
+    background-color: var(--hover-color); }
     .message:hover .handle {
       display: inline-block; }
     .message:hover .edit-message {
