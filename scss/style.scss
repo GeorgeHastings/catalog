@@ -32,33 +32,34 @@ body {
 }
 
 .dark-theme {
-  --bg-color: #171727;
+  --snippet-bg-color: #03011B;
+  --bg-color: #13112F;
   --border-color: #282f4e;
   --text-color: white;
-  --subtle-text-color: #8192b9;
-  --backdrop-color: lighten(#282f4e, 5%);
-  --focus-color: lighten(#282f4e, 10%);
-  --select-color: lighten(#171727, 5%);
-  --hover-color: lighten(#171727, 2%);
-  --radio-color: #8192b9;
-  --var-color: cyan;
-  --text-math: cyan;
-  --ic-color: #282f4e;
+  --subtle-text-color: #8994B1;
+  --backdrop-color: #393D55;
+  --focus-color: #505670;
+  --select-color: #282943;
+  --hover-color: #1E1F3B;
+  --radio-color: #8994B1;
+  --var-color: #2AEAFF;
+  --text-math: #2AEAFF;
+  --ic-color: #2F344D;
 }
 
 .light-theme {
   --bg-color: white;
   --border-color: #EFF4F8;
   --text-color: #171727;
-  --subtle-text-color: #8192b9;
-  --backdrop-color: #bcc6d1;
-  --focus-color: darken(#EFF4F8, 10%);
-  --select-color: lighten(#EFF4F8, 1.5%);
-  --hover-color: lighten(#EFF4F8, 3%);
-  --radio-color: #bcc6d1;
-  --var-color: #4579FF;
-  --text-math: #4579FF;
-  --ic-color: lighten(#E5ECFF, 2%);
+  --subtle-text-color: #8994B1;
+  --backdrop-color: #ABBBD1;
+  --focus-color: #D2E1F3;
+  --select-color: #D2E1F3;
+  --hover-color: #F7FBFE;
+  --radio-color: #D2E1F3;
+  --var-color: #6B45FF;
+  --text-math: #6B45FF;
+  --ic-color: #DEE9F8;
 }
 
 .wrapper,
@@ -324,7 +325,7 @@ body {
       padding: 1rem;
       font-family: $mono;
       background-color: var(--hover-color);
-      border: 1px solid var(--select-color);
+      // border: 1px solid var(--select-color);
       overflow-x: scroll;
       color: var(--subtle-text-color);
     }
@@ -336,7 +337,7 @@ body {
     .m-c {
       padding: 1rem;
       background-color: var(--hover-color);
-      border: 1px solid var(--select-color);
+      // border: 1px solid var(--select-color);
     }
 
     svg {
@@ -361,7 +362,7 @@ body {
     justify-content:flex-start;
     text-transform: uppercase;
     padding: 0.1rem 0.4rem;
-    background-color: var(--select-color);
+    background-color: var(--hover-color);
 
     .color-swatch {
       width: 15px;
@@ -476,7 +477,7 @@ body {
 
     .m-c {
       display: inline-table;
-      background-color: var(--select-color);
+      background-color: var(--hover-color);
 
       img[src=""] {
         display: none;
@@ -543,7 +544,7 @@ h1,h2,h3,h4 {
   padding: 0.1rem 0.4rem;
   font-size: 0.85rem;
   color: #e244a0;
-  background-color: var(--select-color);
+  background-color: var(--hover-color);
   border-radius: 2px;
 }
 

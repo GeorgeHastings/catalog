@@ -220,8 +220,8 @@ input[type=checkbox] + label:before {
   text-align: center;
   line-height: 1rem;
   border-radius: 2px;
-  border: 1px solid var(--backdrop-color);
-  background: var(--select-color);
+  border: 1px solid var(--select-color);
+  background: var(--hover-color);
   cursor: pointer;
 }
 
