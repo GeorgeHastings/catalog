@@ -40,6 +40,7 @@ body {
   --backdrop-color: #393D55;
   --focus-color: #505670;
   --select-color: #282943;
+  --message-hover-color: #2A2840;
   --hover-color: #1E1F3B;
   --radio-color: #8994B1;
   --var-color: #2AEAFF;
@@ -504,7 +505,7 @@ body {
   }
 
   &:hover {
-    background-color: var(--hover-color);
+    background-color: var(--message-hover-color);
 
     .handle {
       display: inline-block;
